@@ -1,19 +1,13 @@
-const mongoose = require("mongoose"); // Erase if already required
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-// Declare the Schema of the Mongo model
-var userSchema = new mongoose.Schema(
+const {model,Schema} = require("mongoose")
+
+const userSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
+    username: {
       type: String,
       required: true,
       unique: true,
     },
-    mobile: {
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -22,49 +16,17 @@ var userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    role: {
+    profilePicture: {
       type: String,
-      require: true,
+      default:
+        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
     },
-
-    refreshToken: {
-      type: String,
-    },
-    passwordChangedAt: {
-      type: String,
-    },
-    passwordResetToken: {
-      type: String,
-    },
-    passwordResetExpires: {
-      type: String,
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
-  const salt = bcrypt.genSaltSync(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-userSchema.methods = {
-  isCorrectPassword: async function (password) {
-    return await bcrypt.compare(password, this.password);
-  },
-  // createChangePassword: function () {
-  //   const resetToken = crypto.randomBytes(32).toString("hex");
-  //   this.passwordResetToken = crypto
-  //     .createHash("sha256")
-  //     .update(resetToken)
-  //     .digest("hex");
-  //   this.passwordResetExpires = Date.now() + 15 * 60 * 1000;
-  //   return resetToken
-  // },
-};
-//Export the model
-module.exports = mongoose.model("User", userSchema);
+module.exports = model("User", userSchema);
