@@ -60,7 +60,7 @@ const Header = () => {
       <form onSubmit={handleSubmit}>
         <TextInput
           type="text"
-          placeholder="Search..."
+          placeholder="Tìm kiếm..."
           rightIcon={IoMdSearch}
           className="hidden lg:inline"
         />
@@ -68,11 +68,17 @@ const Header = () => {
 
       <Navbar.Collapse>
         <Navbar.Link active={path === "/"} as={"div"}>
-          <Link to="/">Home</Link>
+          <Link to="/">
+            <p className="text-base">Trang chủ</p>
+          </Link>
         </Navbar.Link>
-
-        <Navbar.Link active={path === "/about"} as={"div"}>
-          <Link to="/about">About</Link>
+        <Navbar.Link active={path === "/project"} as={"div"}>
+          <Link to="/dashboard?tab=dash"><p className="text-base">Trang quản trị</p></Link>
+        </Navbar.Link>
+        <Navbar.Link active={path === "/project"} as={"div"}>
+          <Link to="/dashboard?tab=dash">
+            <p className="text-base">About</p>
+          </Link>
         </Navbar.Link>
       </Navbar.Collapse>
       <div className="flex gap-4">
@@ -96,7 +102,7 @@ const Header = () => {
                 </span>
               </Dropdown.Header>
               <Link to={"/dashboard?tab=profile"}>
-                <Dropdown.Item>Profile</Dropdown.Item>
+                <Dropdown.Item>Hồ sơ của bạn</Dropdown.Item>
               </Link>
               <Dropdown.Divider />
               <Dropdown.Item onClick={handleLogout}>Đăng xuất</Dropdown.Item>
@@ -110,6 +116,7 @@ const Header = () => {
           )}
           <Navbar.Toggle />
         </div>
+        <Navbar.Toggle />
       </div>
     </Navbar>
   );

@@ -18,19 +18,20 @@ const Register = () => {
     }
     try {
       setLoading(true);
-      setErrorMessage(null)
+      setErrorMessage(null);
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      console.log(data)
       if (data.success === false) {
         return setErrorMessage(data.message);
       }
       setLoading(false);
-      if(res.ok) {
-        navigate('/login');
+      if (res.ok) {
+        navigate("/login");
       }
     } catch (error) {
       setErrorMessage(error.message);
@@ -40,9 +41,9 @@ const Register = () => {
   const handleOnChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
-  const handleForcus = () =>{
-    setErrorMessage(null)
-  }
+  const handleForcus = () => {
+    setErrorMessage(null);
+  };
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-6">
@@ -50,15 +51,19 @@ const Register = () => {
         <div className="flex-1">
           <Link>
             <img
-              src="https://nqwebdesign.com/wp-content/uploads/2020/01/blog-icon.png"
-              className="w-52"
+             src="https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/218592113_833258763962824_4524656760363020571_n.jpg?stp=dst-jpg_s960x960&_nc_cat=100&ccb=1-7&_nc_sid=5f2048&_nc_ohc=DpYALctDRI4Q7kNvgE6a6fR&_nc_ht=scontent.fsgn2-7.fna&oh=00_AYCT_0xdXGxqzGRYjSuqNVO9zNbWlzCWJdjSZgRxt4_8_A&oe=66440E34"
+             className="w-100"
+
             />
           </Link>
-          <p className="text-sm mt-5">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Totam
-            voluptas dolorum sunt sed hic commodi. Tempora officiis, placeat
-            eaque modi amet vitae cumque! Nulla nam ad suscipit voluptas,
-            voluptate voluptatem!
+          <p className="text-sm">
+            Chào mừng đến với cộng đồng của chúng tôi! Ở đây không chỉ là một
+            nơi để chia sẻ những suy nghĩ và trải nghiệm của bạn. Hãy cùng chúng
+            tôi trải nghiệm hành trình của kiến thức và chia sẻ.
+            <br />
+            <p className="text-red-600 text-base dark:text-cyan-500">
+              Đăng ký ngay bây giờ để bắt đầu!
+            </p>
           </p>
         </div>
         {/* right */}
@@ -84,7 +89,7 @@ const Register = () => {
                 id="email"
                 onChange={handleOnChange}
               />
-                {/* {errorMessage && <div className="text-rose-700 text-sm bg-teal-200 w-full p-1 rounded-md">{errorMessage}</div>} */}
+              {/* {errorMessage && <div className="text-rose-700 text-sm bg-teal-200 w-full p-1 rounded-md">{errorMessage}</div>} */}
             </div>
 
             <div>
@@ -95,11 +100,12 @@ const Register = () => {
                 id="password"
                 onChange={handleOnChange}
               />
-                {/* {errorMessage && <div className="text-rose-700 text-sm bg-teal-200 w-full p-1 rounded-md">{errorMessage}</div>} */}
+              {/* {errorMessage && <div className="text-rose-700 text-sm bg-teal-200 w-full p-1 rounded-md">{errorMessage}</div>} */}
             </div>
             <Button gradientDuoTone="purpleToBlue" outline type="submit">
               Đăng ký
             </Button>
+         
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Đã có tài khoản</span>
@@ -108,7 +114,7 @@ const Register = () => {
             </Link>
           </div>
           {errorMessage && (
-            <Alert className='mt-5' color='failure'>
+            <Alert className="mt-5" color="failure">
               {errorMessage}
             </Alert>
           )}
