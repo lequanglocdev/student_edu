@@ -50,7 +50,7 @@ const DashSideBar = () => {
                 icon={IoMdClipboard}
                 as='div'
               >
-                Trang quản trị
+                Quản lý lớp học 
               </Sidebar.Item>
             </Link>
           )}
@@ -62,7 +62,7 @@ const DashSideBar = () => {
                 icon={FaFileInvoice}
                 labelColor="dark"
               >
-               Quản lý bài viết
+               Quản lý môn học
               </Sidebar.Item>
             </Link>
           )}
@@ -73,7 +73,7 @@ const DashSideBar = () => {
                 icon={FaRegUser}
                 labelColor="dark"
               >
-                Quản lý thành viên
+                Quản lý sinh viên
               </Sidebar.Item>
             </Link>
           )}

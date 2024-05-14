@@ -20,7 +20,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFail,
-  logoutSuccess
+  logoutSuccess,
 } from "../redux/user/userSlice";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 const DashProfile = () => {
@@ -52,7 +52,7 @@ const DashProfile = () => {
     }
   }, [image]);
 
-  const uploadImage = async() => {
+  const uploadImage = async () => {
     setImageFileUploading(true);
     setImageFileUploadError(null);
     const storage = getStorage(app);
@@ -147,8 +147,8 @@ const DashProfile = () => {
   };
   const handleLognout = async () => {
     try {
-      const res = await fetch('/api/auth/logout', {
-        method: 'POST',
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
       });
       const data = await res.json();
       if (!res.ok) {
@@ -223,6 +223,13 @@ const DashProfile = () => {
           onChange={handleChange}
         />
         <TextInput
+          type="idstudent"
+          id="idstudent"
+          placeholder="idStudent"
+          defaultValue={createUser.idstudent}
+          onChange={handleChange}
+        />
+        <TextInput
           type="password"
           id="password"
           placeholder="password"
@@ -234,24 +241,27 @@ const DashProfile = () => {
           outline
           disabled={loading || imageFileUploading}
         >
-        
-          {loading ? 'Loading...' : 'Cập nhật thông tin'}
+          {loading ? "Loading..." : "Cập nhật thông tin"}
         </Button>
         {createUser.isAdmin && (
-          <Link to={'/create-post'}>
+          <Link to={"/create-post"}>
             <Button
-              type='button'
-              gradientDuoTone='purpleToPink'
-              className='w-full'
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
             >
-             <span className="text-base"> Tạo một bài viết</span>
+              <span className="text-base"> Tạo một bài viết</span>
             </Button>
           </Link>
         )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
-        <span onClick={() => setShowModal(true)} className="cursor-pointer">Xóa tài khoản</span>
-        <span onClick={handleLognout}  className="cursor-pointer">Đăng xuất</span>
+        <span onClick={() => setShowModal(true)} className="cursor-pointer">
+          Xóa tài khoản
+        </span>
+        <span onClick={handleLognout} className="cursor-pointer">
+          Đăng xuất
+        </span>
       </div>
       {updateUserSuccess && (
         <Alert color="success" className="mt-5">
@@ -263,7 +273,7 @@ const DashProfile = () => {
           {updateUserError}
         </Alert>
       )}
-      
+
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
@@ -275,14 +285,14 @@ const DashProfile = () => {
           <div className="text-center">
             <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
             <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-            Bạn có chắc rằng bạn muốn xóa tài khoản ?
+              Bạn có chắc rằng bạn muốn xóa tài khoản ?
             </h3>
             <div className="flex justify-center gap-4">
               <Button color="failure" onClick={handleDeleteUser}>
-                  Xóa 
+                Xóa
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>
-                  Không
+                Không
               </Button>
             </div>
           </div>

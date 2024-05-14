@@ -1,4 +1,4 @@
-const {model,Schema} = require("mongoose")
+const { model, Schema } = require("mongoose");
 
 const userSchema = new Schema(
   {
@@ -7,9 +7,21 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+    idstudent: {
+      type: String,
+      default:null
+    },
+    gender: {
+      type: String,
+      default: null,
+    },
+    class: {
+      type: String,
+      default: null,
+    },
     email: {
       type: String,
-      required: true,
+      require: true,
       unique: true,
     },
     password: {
@@ -19,7 +31,7 @@ const userSchema = new Schema(
     profilePicture: {
       type: String,
       default:
-        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
     },
     isAdmin: {
       type: Boolean,

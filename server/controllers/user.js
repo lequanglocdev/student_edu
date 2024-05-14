@@ -12,6 +12,11 @@ const updateUser = async (req, res, next) => {
     }
     req.body.password = bcryptjs.hashSync(req.body.password, 10);
   }
+  if (req.body.idstudent !== undefined) {
+    if (req.body.idstudent.length < 6) {
+      return next(errorHandler(400, 'idstudent must be at least 6 characters'));
+    }
+  }
   if (req.body.username) {
     if (req.body.username.length < 7 || req.body.username.length > 20) {
       return next(
@@ -39,12 +44,14 @@ const updateUser = async (req, res, next) => {
           email: req.body.email,
           profilePicture: req.body.profilePicture,
           password: req.body.password,
+          idstudent:req.body.idstudent
         },
       },
       { new: true }
     );
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);
+    console.log(rest)
   } catch (error) {
     next(error);
   }
