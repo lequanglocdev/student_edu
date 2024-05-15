@@ -73,6 +73,8 @@ const DashUsers = () => {
               <Table.HeadCell>Ngày tham gia</Table.HeadCell>
               <Table.HeadCell>Ảnh đại diện</Table.HeadCell>
               <Table.HeadCell>Họ tên</Table.HeadCell>
+              <Table.HeadCell>Mã số sinh viên</Table.HeadCell>
+              <Table.HeadCell>Giới tính</Table.HeadCell>
               <Table.HeadCell>Email</Table.HeadCell>
               <Table.HeadCell>Quản tri viên</Table.HeadCell>
               <Table.HeadCell>Xóa</Table.HeadCell>
@@ -96,6 +98,8 @@ const DashUsers = () => {
                   </Table.Cell>
 
                   <Table.Cell>{user.username}</Table.Cell>
+                  <Table.Cell>{user.idstudent}</Table.Cell>
+                  <Table.Cell>{user.gender}</Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>
                     {user.isAdmin ? (

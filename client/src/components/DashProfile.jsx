@@ -1,5 +1,5 @@
 // import React from 'react'
-import { Alert, Button, Modal, TextInput } from "flowbite-react";
+import { Alert, Button, Modal, Select, TextInput } from "flowbite-react";
 import { useRef, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -161,7 +161,7 @@ const DashProfile = () => {
     }
   };
   return (
-    <div className="max-w-lg mx-auto p-3 w-full">
+    <div className="max-w-3xl mx-auto p-3 w-full">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 my-7">
         <input
           type="file"
@@ -208,33 +208,60 @@ const DashProfile = () => {
         {imageFileUploadError && (
           <Alert color="failure">{imageFileUploadError}</Alert>
         )}
-        <TextInput
-          type="text"
-          id="username"
-          placeholder="username"
-          defaultValue={createUser.username}
-          onChange={handleChange}
-        />
-        <TextInput
-          type="email"
-          id="email"
-          placeholder="email"
-          defaultValue={createUser.email}
-          onChange={handleChange}
-        />
-        <TextInput
-          type="idstudent"
-          id="idstudent"
-          placeholder="idStudent"
-          defaultValue={createUser.idstudent}
-          onChange={handleChange}
-        />
-        <TextInput
-          type="password"
-          id="password"
-          placeholder="password"
-          onChange={handleChange}
-        />
+        <div className="flex justify-between gap-4 ">
+          <div className="w-96 flex flex-col gap-4">
+            <TextInput
+              type="text"
+              id="username"
+              placeholder="username"
+              defaultValue={createUser.username}
+              onChange={handleChange}
+            />
+            <TextInput
+              type="email"
+              id="email"
+              placeholder="email"
+              defaultValue={createUser.email}
+              onChange={handleChange}
+            />
+            {!createUser.isAdmin && (
+              <TextInput
+                type="idstudent"
+                id="idstudent"
+                placeholder="mssv"
+                defaultValue={createUser.idstudent}
+                onChange={handleChange}
+              />
+            )}
+          </div>
+          <div className="w-96 flex flex-col gap-4">
+            <Select
+              id="gender"
+              // defaultValue={createUser.gender}
+              // onChange={handleChange}
+              onChange={(e) =>
+                setFormData({ ...formData, gender: e.target.value })
+              }
+            >
+             <option value="uncategorized">Chọn</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </Select>
+            <TextInput
+              type="class"
+              id="class"
+              placeholder="Lớp"
+              defaultValue={createUser.class}
+              onChange={handleChange}
+            />
+            <TextInput
+              type="password"
+              id="password"
+              placeholder="password"
+              onChange={handleChange}
+            />
+          </div>
+        </div>
         <Button
           type="submit"
           gradientDuoTone="purpleToBlue"
@@ -250,7 +277,7 @@ const DashProfile = () => {
               gradientDuoTone="purpleToPink"
               className="w-full"
             >
-              <span className="text-base"> Tạo một bài viết</span>
+              <span className="text-base"> Tạo tạo môn học</span>
             </Button>
           </Link>
         )}

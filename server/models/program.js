@@ -1,30 +1,25 @@
 const { model, Schema } = require("mongoose");
 
-const courseSchema = new Schema(
+const programSchema = new Schema(
   {
-    courseCode: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    courseName: {
+    programName: {
       type: String,
       required: true,
     },
-    credits: {
+    department: {
+      type: String,
+      required: true,
+    },
+    requiredCredits: {
       type: Number,
       required: true,
     },
-    mandatory: {
-      type: Boolean,
-      required: true,
-    },
-    prerequisites: [{
+    courses: [{
       type: Schema.Types.ObjectId,
-      ref: 'Course'
+      ref: 'Course',
     }],
   },
   { timestamps: true }
 );
 
-module.exports = model("Course", courseSchema);
+module.exports = model("Program", programSchema);

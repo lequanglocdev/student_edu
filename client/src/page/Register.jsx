@@ -13,7 +13,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.username || !formData.email || !formData.password ) {
+    if (!formData.username || !formData.email || !formData.password) {
       return setErrorMessage("Không được để trống");
     }
     try {
@@ -25,7 +25,7 @@ const Register = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log(data)
+      console.log(data);
       if (data.success === false) {
         return setErrorMessage(data.message);
       }
@@ -46,25 +46,15 @@ const Register = () => {
   };
   return (
     <div className="min-h-screen mt-20">
-      <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-6">
+      <div className="flex p-3 max-w-full mx-auto flex-col md:flex-row md:items-center gap-6">
         {/* left */}
         <div className="flex-1">
           <Link>
             <img
-             src="https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/218592113_833258763962824_4524656760363020571_n.jpg?stp=dst-jpg_s960x960&_nc_cat=100&ccb=1-7&_nc_sid=5f2048&_nc_ohc=DpYALctDRI4Q7kNvgE6a6fR&_nc_ht=scontent.fsgn2-7.fna&oh=00_AYCT_0xdXGxqzGRYjSuqNVO9zNbWlzCWJdjSZgRxt4_8_A&oe=66440E34"
-             className="w-100"
-
+              src="https://moit.gov.vn/upload/2005517/20220405/mat_tien_nha_E_2021_42e23.jpg"
+              className="w-screen"
             />
           </Link>
-          <p className="text-sm">
-            Chào mừng đến với cộng đồng của chúng tôi! Ở đây không chỉ là một
-            nơi để chia sẻ những suy nghĩ và trải nghiệm của bạn. Hãy cùng chúng
-            tôi trải nghiệm hành trình của kiến thức và chia sẻ.
-            <br />
-            <p className="text-red-600 text-base dark:text-cyan-500">
-              Đăng ký ngay bây giờ để bắt đầu!
-            </p>
-          </p>
         </div>
         {/* right */}
         <div className="flex-1">
@@ -105,7 +95,6 @@ const Register = () => {
             <Button gradientDuoTone="purpleToBlue" outline type="submit">
               Đăng ký
             </Button>
-         
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Đã có tài khoản</span>

@@ -44,7 +44,9 @@ const updateUser = async (req, res, next) => {
           email: req.body.email,
           profilePicture: req.body.profilePicture,
           password: req.body.password,
-          idstudent:req.body.idstudent
+          idstudent:req.body.idstudent,
+          gender:req.body.gender,
+          class:req.body.class
         },
       },
       { new: true }
