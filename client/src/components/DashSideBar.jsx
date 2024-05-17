@@ -56,9 +56,9 @@ const DashSideBar = () => {
           )}
 
           {createUser && createUser.isAdmin && (
-            <Link to="/dashboard?tab=post">
+            <Link to="/dashboard?tab=course">
               <Sidebar.Item
-                active={tab === "post"}
+                active={tab === "course"}
                 icon={FaFileInvoice}
                 labelColor="dark"
               >

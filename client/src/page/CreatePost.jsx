@@ -1,66 +1,26 @@
-import { Alert, Button, FileInput, Select, TextInput } from "flowbite-react";
-import ReactQuill from "react-quill";
+import { Alert, Button, Select, TextInput } from "flowbite-react";
+
 import "react-quill/dist/quill.snow.css";
 
 import "react-circular-progressbar/dist/styles.css";
-import { useState } from "react";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { app } from "../firebase";
-import { CircularProgressbar } from "react-circular-progressbar";
-import { useNavigate } from "react-router-dom";
+import { useState , } from "react";
+
 const CreatePost = () => {
-  const [file, setFile] = useState([]);
-  const [imageUploadProgress, setImageUploadProgress] = useState(null);
-  const [imageUploadError, setImageUploadError] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    courseCode: "",
+    courseName: "",
+    credits: "uncategorized",
+    mandatory: "uncategorized",
+  });
   const [publishError, setPublishError] = useState(null);
-  console.log(formData)
-  const navigate = useNavigate();
-  const handleUploadImage = () => {
-    try {
-      if (!file) {
-        setImageUploadError("Please select an image");
-        return;
-      }
-      setImageUploadError(null);
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + "-" + file.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageUploadProgress(progress.toFixed(0));
-        },
-        () => {
-          setImageUploadError("Image upload failed");
-          setImageUploadProgress(null);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageUploadProgress(null);
-            setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
-          });
-        }
-      );
-    } catch (error) {
-      setImageUploadError("Image upload failed");
-      setImageUploadProgress(null);
-      console.log(error);
-    }
-  };
+  const [successMessage, setSuccessMessage] = useState(null);
+  console.log(formData);
+  // const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/post/create", {
+      const res = await fetch("/api/course/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,89 +35,82 @@ const CreatePost = () => {
 
       if (res.ok) {
         setPublishError(null);
-        navigate(`/post/${data.slug}`);
+        setSuccessMessage('Môn học đc tạo thành công');
+        setFormData({
+          courseCode: "",
+          courseName: "",
+          credits: "uncategorized",
+          mandatory: "uncategorized",
+        });
       }
     } catch (error) {
       setPublishError("Something went wrong");
     }
   };
+ 
   return (
-    <div className="p-2 max-w-3xl mx-auto min-h-screen">
-      <h1 className="text-center text-3xl my-4 font-semibold">Create a post</h1>
+    <div className="p-2 max-w-2xl mx-auto min-h-screen">
+      <h1 className="text-center text-3xl my-4 font-semibold">Tạo môn học</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-4 sm:flex-row justify-between">
+        <div className="flex flex-col gap-4 justify-between">
           <TextInput
             type="text"
-            placeholder="Title"
+            placeholder="Mã môn học"
             required
-            id="title"
+            id="courseCode"
             className="flex-1"
+            value={formData.courseCode}
             onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
+              setFormData({ ...formData, courseCode: e.target.value })
+            }
+          />
+          <TextInput
+            type="text"
+            placeholder="Tên môn học"
+            required
+            id="courseName"
+            className="flex-1"
+            value={formData.courseName  }
+            onChange={(e) =>
+              setFormData({ ...formData, courseName: e.target.value })
             }
           />
           <Select
+           value={formData.credits}
             onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
+              setFormData({ ...formData, credits: e.target.value })
             }
           >
-            <option value="uncategorized">NodeJS</option>
-            <option value="javascript">JavaScript</option>
-            <option value="reactjs">Reacts</option>
-            <option value="nextjs">Next.js</option>
+            <option value="uncategorized">Số tín chỉ</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </Select>
+          <Select
+           value={formData.mandatory}
+            onChange={(e) =>
+              setFormData({ ...formData, mandatory: e.target.value })
+            }
+          >
+            <option value="uncategorized">Bắt buộc</option>
+            <option value="true">Co</option>
+            <option value="false">Không</option>
           </Select>
         </div>
-        <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
-          <FileInput
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
-          <Button
-            type="button"
-            gradientDuoTone="purpleToBlue"
-            size="sm"
-            outline
-            onClick={handleUploadImage}
-            disabled={imageUploadProgress}
-          >
-            {imageUploadProgress ? (
-              <div className="w-16 h-16">
-                <CircularProgressbar
-                  value={imageUploadProgress}
-                  text={`${imageUploadProgress || 0}%`}
-                />
-              </div>
-            ) : (
-              "Upload Image"
-            )}
-          </Button>
-        </div>
-        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
-        {formData.image && (
-          <img
-            src={formData.image}
-            alt="upload"
-            className="w-full h-72 object-cover"
-          />
-        )}
 
-        <ReactQuill
-          theme="snow"
-          placeholder="Write something..."
-          className="h-60 mb-12"
-          required
-          onChange={(value) => {
-            setFormData({ ...formData, content: value });
-          }}
-        />
         <Button type="submit" gradientDuoTone="purpleToPink">
-          Publish
+          Tạo môn học
         </Button>
         {publishError && (
           <Alert className="mt-5" color="failure">
             {publishError}
           </Alert>
+        )}
+        {successMessage && (
+          <Alert className="mt-5" color="success">
+          {successMessage}
+        </Alert>
         )}
       </form>
     </div>

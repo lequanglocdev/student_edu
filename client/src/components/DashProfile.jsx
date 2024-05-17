@@ -208,8 +208,8 @@ const DashProfile = () => {
         {imageFileUploadError && (
           <Alert color="failure">{imageFileUploadError}</Alert>
         )}
-        <div className="flex justify-between gap-4 ">
-          <div className="w-96 flex flex-col gap-4">
+        <div className={`flex ${createUser.isAdmin ? 'flex-col' : 'justify-between'} gap-4`}>
+          <div className={`${createUser.isAdmin ? 'w-3xl' : 'w-96'} flex flex-col gap-4`}>
             <TextInput
               type="text"
               id="username"
@@ -234,8 +234,9 @@ const DashProfile = () => {
               />
             )}
           </div>
-          <div className="w-96 flex flex-col gap-4">
-            <Select
+          <div className={` ${createUser.isAdmin ? 'w-3xl' : 'w-96'}  flex flex-col gap-4`}>
+          {!createUser.isAdmin && (
+              <Select
               id="gender"
               // defaultValue={createUser.gender}
               // onChange={handleChange}
@@ -243,17 +244,21 @@ const DashProfile = () => {
                 setFormData({ ...formData, gender: e.target.value })
               }
             >
-             <option value="uncategorized">Chọn</option>
+              <option value="uncategorized">Chọn</option>
               <option value="Nam">Nam</option>
               <option value="Nữ">Nữ</option>
             </Select>
-            <TextInput
-              type="class"
-              id="class"
-              placeholder="Lớp"
-              defaultValue={createUser.class}
-              onChange={handleChange}
-            />
+          )}
+
+            {!createUser.isAdmin && (
+              <TextInput
+                type="class"
+                id="class"
+                placeholder="Lớp"
+                defaultValue={createUser.class}
+                onChange={handleChange}
+              />
+            )}
             <TextInput
               type="password"
               id="password"
@@ -271,7 +276,7 @@ const DashProfile = () => {
           {loading ? "Loading..." : "Cập nhật thông tin"}
         </Button>
         {createUser.isAdmin && (
-          <Link to={"/create-post"}>
+          <Link to={"/create-course"}>
             <Button
               type="button"
               gradientDuoTone="purpleToPink"

@@ -12,7 +12,7 @@ const courseSchema = new Schema(
       required: true,
     },
     credits: {
-      type: Number,
+      type: String,
       required: true,
     },
     mandatory: {
