@@ -286,6 +286,17 @@ const DashProfile = () => {
             </Button>
           </Link>
         )}
+          {createUser.isAdmin && (
+          <Link to={"/create-schedule"}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              <span className="text-base"> Tạo tạo lịch học</span>
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">

@@ -5,11 +5,11 @@ const createSchedule = async (req, res, next) => {
   if (!req.user.isAdmin) {
     return next(errorHandler(403, 'You are not allowed to create a schedule'));
   }
-  const { classId, dayOfWeek, startTime, endTime, location } = req.body;
-  if (!classId || !dayOfWeek || !startTime || !endTime || !location) {
+  const { classId,course, dayOfWeek, startTime, endTime, location } = req.body;
+  if (!classId || !course ||!dayOfWeek || !startTime || !endTime || !location) {
     return next(errorHandler(400, 'Please provide all required fields'));
   }
-  const newSchedule = new Schedule({ class: classId, dayOfWeek, startTime, endTime, location });
+  const newSchedule = new Schedule({ class: classId, course,dayOfWeek, startTime, endTime, location });
   try {
     const savedSchedule = await newSchedule.save();
     res.status(201).json(savedSchedule);

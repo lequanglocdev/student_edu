@@ -12,6 +12,7 @@ import AdminPrivateRoute from "./components/AdminPrivateRoute";
 
 import UpadatePost from "./page/UpadatePost";
 import CreateCourse from "./page/CreateCourse";
+import CreateSchedule from "./page/CreateSchedule";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         </Route>
         <Route element={<AdminPrivateRoute />}>
           <Route path='/create-course' element={<CreateCourse />} />
+          <Route path='/create-schedule' element={<CreateSchedule />} />
           <Route path='/update-post/:postId' element={<UpadatePost />} />
         </Route>
       </Routes>

@@ -3,8 +3,12 @@ const { model, Schema } = require("mongoose");
 const scheduleSchema = new Schema(
   {
     class: {
+      type: String,
+      required: true,
+    },
+    course: {
       type: Schema.Types.ObjectId,
-      ref: 'Class',
+      ref: 'Course',
       required: true,
     },
     dayOfWeek: {
