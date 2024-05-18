@@ -19,10 +19,7 @@ const courseSchema = new Schema(
       type: Boolean,
       required: true,
     },
-    prerequisites: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Course'
-    }],
+  
   },
   { timestamps: true }
 );

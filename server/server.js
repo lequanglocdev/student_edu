@@ -5,7 +5,7 @@ const dbConnect = require("./config/dbConnect");
 const  cookieParser = require("cookie-parser")
 
 const authRoute = require("./routes/auth")
-const postRoute = require("./routes/post")
+
 const userRoute = require("./routes/user")
 const courseRoute = require("./routes/course")
 const app = express();
@@ -24,7 +24,6 @@ app.listen(port, () => {
 
 
 app.use("/api/auth",authRoute)
-app.use("/api/post",postRoute)
 app.use("/api/user",userRoute)
 app.use("/api/course",courseRoute)
 

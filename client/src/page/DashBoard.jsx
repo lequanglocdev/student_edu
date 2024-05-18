@@ -4,6 +4,7 @@ import DashProfile from "../components/DashProfile";
 import DashSideBar from "../components/DashSideBar";
 import DashCours from "../components/DashCours";
 import DashUsers from "../components/DashUsers";
+import DashRegiserCourse from "../components/DashRegiserCourse";
 // import DashPost from "../components/DashPost";
 // import DashUsers from "../components/DashUsers";
 // import DashBoardComponent   from "../components/DashBoardComponent";
@@ -26,10 +27,12 @@ const DashBoard = () => {
       </div>
       {/* profile */}
       {tab === 'profile' && <DashProfile />}
-      {/* post */}
+      {/* course */}
       {tab === 'course' && <DashCours />}
       {/* user */}
       {tab === 'users' && <DashUsers />}
+      {/* regiserCourse */}
+      {tab === 'regiserCourse' && <DashRegiserCourse />}
     </div>
   );
 };

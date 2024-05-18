@@ -5,7 +5,7 @@ import "react-quill/dist/quill.snow.css";
 import "react-circular-progressbar/dist/styles.css";
 import { useState , } from "react";
 
-const CreatePost = () => {
+const CreateCourse = () => {
   const [formData, setFormData] = useState({
     courseCode: "",
     courseName: "",
@@ -117,4 +117,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default CreateCourse;

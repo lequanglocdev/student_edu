@@ -9,8 +9,9 @@ import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
 import DashBoard from "./page/DashBoard";
 import AdminPrivateRoute from "./components/AdminPrivateRoute";
-import CreatePost from "./page/CreatePost";
+
 import UpadatePost from "./page/UpadatePost";
+import CreateCourse from "./page/CreateCourse";
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
           <Route path="/dashboard" element={<DashBoard />} />
         </Route>
         <Route element={<AdminPrivateRoute />}>
-          <Route path='/create-course' element={<CreatePost />} />
+          <Route path='/create-course' element={<CreateCourse />} />
           <Route path='/update-post/:postId' element={<UpadatePost />} />
         </Route>
       </Routes>

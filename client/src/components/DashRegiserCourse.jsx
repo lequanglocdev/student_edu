@@ -1,24 +1,20 @@
+import { Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
-import { Button, Modal, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
-const DashPost = () => {
+
+const DashRegiserCourse = () => {
   const { createUser } = useSelector((state) => state.user);
   const [course, setCourse] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [courseIdToDelete, setCourseIdToDelete] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
-  console.log(course);
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch(
-          `/api/course/getCourse?userId=${createUser._id}`
-        );
+        const res = await fetch(`/api/course/getCourse`);
         const data = await res.json();
         if (res.ok) {
           setCourse(data.posts);
@@ -30,69 +26,58 @@ const DashPost = () => {
         console.log(error.message);
       }
     };
-    if (createUser.isAdmin) {
-      fetchPost();
-    }
+
+    fetchPost();
   }, [createUser._id]);
-  const handleShowMore = async () => {
-    const startIndex = course.length;
-    try {
-      const res = await fetch(
-        `/api/course/getCourse?userId=${createUser._id}&startIndex=${startIndex}`
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setCourse((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 9) {
-          setShowMore(false);
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+
+  const handleRowClick = (courseId) => {
+    setSelectedCourse((prevSelectedCourse) =>
+      prevSelectedCourse === courseId ? null : courseId
+    );
   };
-  const handleDeletePost = async () => {
-    setShowModal(false);
-    try {
-      const res = await fetch(
-        `/api/post/deletepost/${courseIdToDelete}/${createUser._id}`,
-        {
-          method: 'DELETE',
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        setCourse((prev) =>
-          prev.filter((post) => post._id !== courseIdToDelete)
-        );
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+
+  const getScheduleForCourse = (courseId) => {
+    // Here you would fetch or prepare the schedule data for the course.
+    // For this example, we'll use dummy data.
+    const schedules = {
+      'course1': ['Monday 10:00 - 12:00', 'Wednesday 14:00 - 16:00'],
+      'course2': ['Tuesday 09:00 - 11:00', 'Thursday 13:00 - 15:00'],
+      'course3': ['Friday 10:00 - 12:00'],
+    };
+
+    return schedules[courseId] || [];
   };
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
-      {createUser.isAdmin && course.length > 0 ? (
+      {course.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
+              <Table.HeadCell>Check</Table.HeadCell>
               <Table.HeadCell>Ngày tạo</Table.HeadCell>
               <Table.HeadCell>Mã môn học</Table.HeadCell>
               <Table.HeadCell>Tên môn học</Table.HeadCell>
               <Table.HeadCell>Số tín chỉ</Table.HeadCell>
               <Table.HeadCell>Bắt buộc</Table.HeadCell>
               <Table.HeadCell>Xóa</Table.HeadCell>
-              <Table.HeadCell>
-                <span>Sửa</span>
-              </Table.HeadCell>
+              <Table.HeadCell>Sửa</Table.HeadCell>
             </Table.Head>
             {course.map((course) => (
-              // eslint-disable-next-line react/jsx-key
-              <Table.Body className="divide-y">
-                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+              <Table.Body className="divide-y" key={course._id}>
+                <Table.Row
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  onClick={() => handleRowClick(course._id)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Table.Cell>
+                    <input
+                      type="radio"
+                      checked={selectedCourse === course._id}
+                      onChange={() => handleRowClick(course._id)}
+                      className={`form-radio ${selectedCourse === course._id ? 'text-green-500' : ''}`}
+                    />
+                  </Table.Cell>
                   <Table.Cell>
                     {new Date(course.updatedAt).toLocaleDateString()}
                   </Table.Cell>
@@ -117,7 +102,6 @@ const DashPost = () => {
                     <span
                       onClick={() => {
                         setShowModal(true);
-                        setCourseIdToDelete(course._id);
                       }}
                       className="font-medium text-red-500 hover:underline cursor-pointer"
                     >
@@ -133,12 +117,28 @@ const DashPost = () => {
                     </Link>
                   </Table.Cell>
                 </Table.Row>
+                {selectedCourse === course._id && (
+                  <Table.Row className="bg-gray-100 dark:bg-gray-700">
+                    <Table.Cell colSpan="8">
+                      <div className="p-4">
+                        <h4 className="font-medium text-gray-900 dark:text-white">Schedule</h4>
+                        <ul className="list-disc list-inside">
+                          {getScheduleForCourse(course._id).map((schedule, index) => (
+                            <li key={index} className="text-gray-700 dark:text-gray-300">
+                              {schedule}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                )}
               </Table.Body>
             ))}
           </Table>
           {showMore && (
             <button
-              onClick={handleShowMore}
+              // onClick={handleShowMore}
               className="w-full text-teal-500 self-center text-sm py-7"
             >
               Show more
@@ -148,32 +148,8 @@ const DashPost = () => {
       ) : (
         <p>You have no posts yet!</p>
       )}
-       <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        popup
-        size="md"
-      >
-        <Modal.Header />
-        <Modal.Body>
-          <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-              Are you sure you want to delete your account?
-            </h3>
-            <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeletePost}>
-                Yes, I am sure
-              </Button>
-              <Button color="gray" onClick={() => setShowModal(false)}>
-                No, cancel
-              </Button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
     </div>
   );
 };
 
-export default DashPost;
+export default DashRegiserCourse;

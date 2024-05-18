@@ -42,15 +42,14 @@ const DashSideBar = () => {
     <Sidebar className="w-full wd:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
-          
-        {createUser && createUser.isAdmin && (
-            <Link to='/dashboard?tab=dash'>
+          {createUser && createUser.isAdmin && (
+            <Link to="/dashboard?tab=dash">
               <Sidebar.Item
-                active={tab === 'dash' || !tab}
+                active={tab === "dash" || !tab}
                 icon={IoMdClipboard}
-                as='div'
+                as="div"
               >
-                Quản lý lớp học 
+                Quản lý lớp học
               </Sidebar.Item>
             </Link>
           )}
@@ -62,7 +61,7 @@ const DashSideBar = () => {
                 icon={FaFileInvoice}
                 labelColor="dark"
               >
-               Quản lý môn học
+                Quản lý môn học
               </Sidebar.Item>
             </Link>
           )}
@@ -77,6 +76,17 @@ const DashSideBar = () => {
               </Sidebar.Item>
             </Link>
           )}
+          <Link to="/dashboard?tab=regiserCourse">
+            <Sidebar.Item
+              active={tab === "regiserCourse"}
+              icon={LuUserCircle2}
+              label={createUser.isAdmin ? "Admin" : "User"}
+              labelColor="dark"
+              as="div"
+            >
+              Học phần
+            </Sidebar.Item>
+          </Link>
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               active={tab === "profile"}
@@ -85,7 +95,7 @@ const DashSideBar = () => {
               labelColor="dark"
               as="div"
             >
-                Cá nhân
+              Cá nhân
             </Sidebar.Item>
           </Link>
           <Sidebar.Item
