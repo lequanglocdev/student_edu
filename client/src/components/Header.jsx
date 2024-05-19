@@ -73,8 +73,8 @@ const Header = () => {
           </Link>
         </Navbar.Link>
         <Navbar.Link active={path === "/project"} as={"div"}>
-          {createUser ? (
-            createUser.isAdmin ? (
+
+           {createUser && createUser.isAdmin ? (
               <Link to="/dashboard?tab=dash">
                 <p className="text-base">Trang quản trị</p>
               </Link>
@@ -82,12 +82,7 @@ const Header = () => {
               <Link to="/dashboard?tab=dash">
                 <p className="text-base">Đăng kí môn học</p>
               </Link>
-            )
-          ) : (
-            <Link to="/login">
-              <p className="text-base">Đăng nhập</p>
-            </Link>
-          )}
+            )}
         </Navbar.Link>
         <Navbar.Link active={path === "/project"} as={"div"}>
           <Link to="/dashboard?tab=dash">

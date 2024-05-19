@@ -13,7 +13,6 @@ const scheduleSchema = new Schema(
     },
     dayOfWeek: {
       type: String,
-      enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
       required: true,
     },
     startTime: {
@@ -24,6 +23,11 @@ const scheduleSchema = new Schema(
       type: String,
       required: true,
     },
+    teacher:{
+      type:String,
+      require:true
+    }
+    ,
     location: {
       type: String,
       required: true,

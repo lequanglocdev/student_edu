@@ -5,11 +5,11 @@ const createSchedule = async (req, res, next) => {
   if (!req.user.isAdmin) {
     return next(errorHandler(403, 'You are not allowed to create a schedule'));
   }
-  const { classId,course, dayOfWeek, startTime, endTime, location } = req.body;
-  if (!classId || !course ||!dayOfWeek || !startTime || !endTime || !location) {
+  const { classId,course, dayOfWeek, startTime, endTime,teacher, location } = req.body;
+  if (!classId || !course ||!dayOfWeek || !startTime || !endTime || !teacher || !location) {
     return next(errorHandler(400, 'Please provide all required fields'));
   }
-  const newSchedule = new Schedule({ class: classId, course,dayOfWeek, startTime, endTime, location });
+  const newSchedule = new Schedule({ class: classId, course,dayOfWeek, startTime, endTime, teacher, location });
   try {
     const savedSchedule = await newSchedule.save();
     res.status(201).json(savedSchedule);
@@ -21,6 +21,15 @@ const createSchedule = async (req, res, next) => {
 const getSchedule = async (req, res, next) => {
   try {
     const schedules = await Schedule.find(req.query);
+    res.status(200).json(schedules);
+  } catch (error) {
+    next(error);
+  }
+}
+const getScheduleByCourseId = async (req, res, next) => {
+  const { courseId } = req.params;
+  try {
+    const schedules = await Schedule.find({ course: courseId });
     res.status(200).json(schedules);
   } catch (error) {
     next(error);
@@ -58,6 +67,7 @@ const deleteSchedule = async (req, res, next) => {
 module.exports = {
   createSchedule,
   getSchedule,
+  getScheduleByCourseId,
   updateSchedule,
   deleteSchedule
 };

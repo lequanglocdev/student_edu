@@ -1,4 +1,4 @@
-import { Table } from "flowbite-react";
+import { Button, Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -8,9 +8,12 @@ const DashRegiserCourse = () => {
   const { createUser } = useSelector((state) => state.user);
   const [course, setCourse] = useState([]);
   const [showMore, setShowMore] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
-
+  const [schedule, setSchedule] = useState([]);
+  const [registrationInfo, setRegistrationInfo] = useState(null);
+  useEffect(() => {
+    console.log(registrationInfo);
+  }, [registrationInfo]);
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -30,28 +33,74 @@ const DashRegiserCourse = () => {
     fetchPost();
   }, [createUser._id]);
 
-  const handleRowClick = (courseId) => {
+  const handleShowMore = async () => {
+    const startIndex = course.length;
+    try {
+      const res = await fetch(
+        `/api/course/getCourse?userId=${createUser._id}&startIndex=${startIndex}`
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setCourse((prev) => [...prev, ...data.posts]);
+        if (data.posts.length < 9) {
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const handleRowClick = async (courseId) => {
     setSelectedCourse((prevSelectedCourse) =>
       prevSelectedCourse === courseId ? null : courseId
     );
+
+    if (selectedCourse !== courseId) {
+      try {
+        const res = await fetch(`/api/schedule/getScheduleByCourseId/${courseId}`);
+        const data = await res.json();
+        if (res.ok) {
+          setSchedule(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    } else {
+      setSchedule([]);
+    }
   };
 
-  const getScheduleForCourse = (courseId) => {
-    // Here you would fetch or prepare the schedule data for the course.
-    // For this example, we'll use dummy data.
-    const schedules = {
-      'course1': ['Monday 10:00 - 12:00', 'Wednesday 14:00 - 16:00'],
-      'course2': ['Tuesday 09:00 - 11:00', 'Thursday 13:00 - 15:00'],
-      'course3': ['Friday 10:00 - 12:00'],
-    };
-
-    return schedules[courseId] || [];
+  const handleRegisterCourse = async () => {
+    try {
+      const res = await fetch("/api/registercourse/registerCourse", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          studentId: createUser._id,
+          courseId: selectedCourse,
+          scheduleId: schedule.map(sch => sch._id),
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRegistrationInfo(data.registration);
+      } else {
+        console.log("Đăng ký không thành công:", data.message);
+      }
+    } catch (error) {
+      console.log("Lỗi khi đăng ký môn học:", error.message);
+    }
   };
+
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
       {course.length > 0 ? (
         <>
+          <h2 className="text-xl font-semibold mb-2">Môn học:</h2>
           <Table hoverable className="shadow-md">
             <Table.Head>
               <Table.HeadCell>Check</Table.HeadCell>
@@ -60,8 +109,6 @@ const DashRegiserCourse = () => {
               <Table.HeadCell>Tên môn học</Table.HeadCell>
               <Table.HeadCell>Số tín chỉ</Table.HeadCell>
               <Table.HeadCell>Bắt buộc</Table.HeadCell>
-              <Table.HeadCell>Xóa</Table.HeadCell>
-              <Table.HeadCell>Sửa</Table.HeadCell>
             </Table.Head>
             {course.map((course) => (
               <Table.Body className="divide-y" key={course._id}>
@@ -85,7 +132,6 @@ const DashRegiserCourse = () => {
                   <Table.Cell>
                     <Link
                       className="font-medium text-gray-900 dark:text-white"
-                      to={`/course/${course.slug}`}
                     >
                       {course.courseName}
                     </Link>
@@ -98,52 +144,79 @@ const DashRegiserCourse = () => {
                       <FaTimes className="text-red-500 " />
                     )}
                   </Table.Cell>
-                  <Table.Cell>
-                    <span
-                      onClick={() => {
-                        setShowModal(true);
-                      }}
-                      className="font-medium text-red-500 hover:underline cursor-pointer"
-                    >
-                      Delete
-                    </span>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Link
-                      className="text-teal-500 hover:underline"
-                      to={`/update-post/${course._id}`}
-                    >
-                      <span>Edit</span>
-                    </Link>
-                  </Table.Cell>
                 </Table.Row>
-                {selectedCourse === course._id && (
-                  <Table.Row className="bg-gray-100 dark:bg-gray-700">
-                    <Table.Cell colSpan="8">
-                      <div className="p-4">
-                        <h4 className="font-medium text-gray-900 dark:text-white">Schedule</h4>
-                        <ul className="list-disc list-inside">
-                          {getScheduleForCourse(course._id).map((schedule, index) => (
-                            <li key={index} className="text-gray-700 dark:text-gray-300">
-                              {schedule}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </Table.Cell>
-                  </Table.Row>
-                )}
               </Table.Body>
             ))}
           </Table>
           {showMore && (
             <button
-              // onClick={handleShowMore}
+              onClick={handleShowMore}
               className="w-full text-teal-500 self-center text-sm py-7"
             >
               Show more
             </button>
           )}
+          {/* {schedule.length > 0 && (
+            <div className="mt-5">
+              <h2 className="text-xl font-semibold mb-2">Lịch học:</h2>
+              <Table>
+                <Table.Head>
+                  <Table.HeadCell>Ngày</Table.HeadCell>
+                  <Table.HeadCell>Thời gian bắt đầu</Table.HeadCell>
+                  <Table.HeadCell>Thời gian kết thúc</Table.HeadCell>
+                  <Table.HeadCell>Giáo viên</Table.HeadCell>
+                  <Table.HeadCell>Địa điểm</Table.HeadCell>
+                </Table.Head>
+                {schedule.map((sch) => (
+                  <Table.Body key={sch._id}>
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                      <Table.Cell>{sch.dayOfWeek}</Table.Cell>
+                      <Table.Cell>{sch.startTime}</Table.Cell>
+                      <Table.Cell>{sch.endTime}</Table.Cell>
+                      <Table.Cell>{sch.teacher}</Table.Cell>
+                      <Table.Cell>{sch.location}</Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                ))}
+              </Table>
+             
+            </div>
+          )} */}
+           <Button gradientDuoTone="purpleToBlue" outline onClick={handleRegisterCourse}>
+                Đăng ký
+              </Button>
+           {/* Hiển thị thông tin đăng ký sau khi đăng ký thành công */}
+           
+           {registrationInfo && (
+  <div className="mt-5">
+    <h2 className="text-xl font-semibold mb-2">Thông tin đăng ký:</h2>
+    console.log(registrationInfo)
+    <p>Sinh viên: {registrationInfo?.student?.username}</p>
+    <p>Môn học: {registrationInfo.course}</p>
+    <h3 className="text-lg font-semibold mb-2">Lịch học:</h3>
+    <Table>
+      <Table.Head>
+        <Table.HeadCell>Ngày</Table.HeadCell>
+        <Table.HeadCell>Thời gian bắt đầu</Table.HeadCell>
+        <Table.HeadCell>Thời gian kết thúc</Table.HeadCell>
+        <Table.HeadCell>Giáo viên</Table.HeadCell>
+        <Table.HeadCell>Địa điểm</Table.HeadCell>
+      </Table.Head>
+      <Table.Body>
+        {Array.isArray(registrationInfo.schedule) && registrationInfo.schedule.map((sch) => (
+          <Table.Row key={sch._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+            <Table.Cell>{sch.dayOfWeek}</Table.Cell>
+            <Table.Cell>{sch.startTime}</Table.Cell>
+            <Table.Cell>{sch.endTime}</Table.Cell>
+            <Table.Cell>{sch.teacher}</Table.Cell>
+            <Table.Cell>{sch.location}</Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  </div>
+)}
+
         </>
       ) : (
         <p>You have no posts yet!</p>

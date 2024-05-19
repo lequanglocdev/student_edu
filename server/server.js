@@ -8,6 +8,7 @@ const authRoute = require("./routes/auth")
 const userRoute = require("./routes/user")
 const courseRoute = require("./routes/course")
 const scheduleRoute = require("./routes/schedule")
+const registerCourseRoute = require("./routes/courseRegistration")
 const app = express();
 const port = process.env.PORT || 8888;
 app.use(cors());
@@ -27,6 +28,7 @@ app.use("/api/auth",authRoute)
 app.use("/api/user",userRoute)
 app.use("/api/course",courseRoute)
 app.use("/api/schedule",scheduleRoute)
+app.use("/api/registercourse",registerCourseRoute)
 
 
 app.get('*', (req, res) => {
