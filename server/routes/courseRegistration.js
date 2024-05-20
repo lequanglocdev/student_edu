@@ -1,10 +1,14 @@
-const { registerCourse} = require("../controllers/courseRegistration")
-const {veryfyUser} = require("../utils/veryfyUser")
+const {
+  registerCourse,
+  getRegisterCourse,
+  getRegistrationsByStudent
+} = require("../controllers/courseRegistration");
+const { veryfyUser } = require("../utils/veryfyUser");
 
+const router = require("express").Router();
 
-const router = require("express").Router()
+router.post("/registerCourse", veryfyUser, registerCourse);
+router.get("/getRegisterCourse",getRegisterCourse)
+router.get("/getRegistrationsByStudent/:userId",getRegistrationsByStudent)
 
-
-router.post('/registerCourse', veryfyUser,registerCourse)
-
-module.exports = router
+module.exports = router;

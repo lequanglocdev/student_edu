@@ -18,14 +18,7 @@ const createCourse = async (req, res, next) => {
   }
 }
 
-// const getCourse = async (req, res, next) => {
-//   try {
-//     const courses = await Course.find(req.query);
-//     res.status(200).json(courses);
-//   } catch (error) {
-//     next(error);
-//   }
-// }
+
 const  getCourse = async(req,res,next) =>{
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;

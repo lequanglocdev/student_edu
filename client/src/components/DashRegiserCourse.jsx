@@ -4,18 +4,16 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { FaCheck, FaTimes } from "react-icons/fa";
 
-const DashRegiserCourse = () => {
+const DashRegisterCourse = () => {
   const { createUser } = useSelector((state) => state.user);
   const [course, setCourse] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [registrationInfo, setRegistrationInfo] = useState(null);
+  const [registeredCourses, setRegisteredCourses] = useState([]);
   useEffect(() => {
-    console.log(registrationInfo);
-  }, [registrationInfo]);
-  useEffect(() => {
-    const fetchPost = async () => {
+    const fetchCourses = async () => {
       try {
         const res = await fetch(`/api/course/getCourse`);
         const data = await res.json();
@@ -30,8 +28,26 @@ const DashRegiserCourse = () => {
       }
     };
 
-    fetchPost();
+    fetchCourses();
   }, [createUser._id]);
+
+  useEffect(() => {
+    if (createUser._id) {
+      fetchRegisteredCourses(createUser._id);
+    }
+  }, [createUser._id]);
+
+  const fetchRegisteredCourses = async (userId) => {
+    try {
+      const res = await fetch(`/api/registercourse/getRegistrationsByStudent/${userId}`);
+      const data = await res.json();
+      if (res.ok) {
+        setRegisteredCourses(data.registrations);
+      }
+    } catch (error) {
+      console.log("Error fetching registered courses:", error.message);
+    }
+  };
 
   const handleShowMore = async () => {
     const startIndex = course.length;
@@ -52,26 +68,28 @@ const DashRegiserCourse = () => {
   };
 
   const handleRowClick = async (courseId) => {
-    setSelectedCourse((prevSelectedCourse) =>
-      prevSelectedCourse === courseId ? null : courseId
-    );
-
-    if (selectedCourse !== courseId) {
-      try {
-        const res = await fetch(`/api/schedule/getScheduleByCourseId/${courseId}`);
-        const data = await res.json();
-        if (res.ok) {
-          setSchedule(data);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    } else {
+    if (selectedCourse === courseId) {
+      setSelectedCourse(null);
       setSchedule([]);
+      return;
+    }
+    setSelectedCourse(courseId);
+    try {
+      const res = await fetch(`/api/schedule/getScheduleByCourseId/${courseId}`);
+      const data = await res.json();
+      if (res.ok) {
+        setSchedule(data);
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
   const handleRegisterCourse = async () => {
+    if (!selectedCourse || schedule.length === 0) {
+      console.log("No course or schedule selected");
+      return;
+    }
     try {
       const res = await fetch("/api/registercourse/registerCourse", {
         method: "POST",
@@ -79,22 +97,23 @@ const DashRegiserCourse = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          studentId: createUser._id,
+          userId: createUser._id,
           courseId: selectedCourse,
-          scheduleId: schedule.map(sch => sch._id),
+          scheduleId: schedule[0]._id, // Assuming you register for the first schedule, adjust if necessary
         }),
       });
       const data = await res.json();
       if (res.ok) {
         setRegistrationInfo(data.registration);
+        console.log("Course registered successfully");
+        fetchRegisteredCourses(createUser._id); // Fetch updated registered courses
       } else {
-        console.log("Đăng ký không thành công:", data.message);
+        console.log("Registration failed:", data.message);
       }
     } catch (error) {
-      console.log("Lỗi khi đăng ký môn học:", error.message);
+      console.log("Error during course registration:", error.message);
     }
   };
-
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
@@ -115,14 +134,16 @@ const DashRegiserCourse = () => {
                 <Table.Row
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                   onClick={() => handleRowClick(course._id)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 >
                   <Table.Cell>
                     <input
                       type="radio"
                       checked={selectedCourse === course._id}
                       onChange={() => handleRowClick(course._id)}
-                      className={`form-radio ${selectedCourse === course._id ? 'text-green-500' : ''}`}
+                      className={`form-radio ${
+                        selectedCourse === course._id ? "text-green-500" : ""
+                      }`}
                     />
                   </Table.Cell>
                   <Table.Cell>
@@ -130,9 +151,7 @@ const DashRegiserCourse = () => {
                   </Table.Cell>
                   <Table.Cell>{course.courseCode}</Table.Cell>
                   <Table.Cell>
-                    <Link
-                      className="font-medium text-gray-900 dark:text-white"
-                    >
+                    <Link className="font-medium text-gray-900 dark:text-white">
                       {course.courseName}
                     </Link>
                   </Table.Cell>
@@ -156,7 +175,7 @@ const DashRegiserCourse = () => {
               Show more
             </button>
           )}
-          {/* {schedule.length > 0 && (
+          {selectedCourse && schedule.length > 0 && (
             <div className="mt-5">
               <h2 className="text-xl font-semibold mb-2">Lịch học:</h2>
               <Table>
@@ -179,50 +198,60 @@ const DashRegiserCourse = () => {
                   </Table.Body>
                 ))}
               </Table>
-             
             </div>
-          )} */}
-           <Button gradientDuoTone="purpleToBlue" outline onClick={handleRegisterCourse}>
-                Đăng ký
-              </Button>
-           {/* Hiển thị thông tin đăng ký sau khi đăng ký thành công */}
-           
-           {registrationInfo && (
-  <div className="mt-5">
-    <h2 className="text-xl font-semibold mb-2">Thông tin đăng ký:</h2>
-    console.log(registrationInfo)
-    <p>Sinh viên: {registrationInfo?.student?.username}</p>
-    <p>Môn học: {registrationInfo.course}</p>
-    <h3 className="text-lg font-semibold mb-2">Lịch học:</h3>
-    <Table>
-      <Table.Head>
-        <Table.HeadCell>Ngày</Table.HeadCell>
-        <Table.HeadCell>Thời gian bắt đầu</Table.HeadCell>
-        <Table.HeadCell>Thời gian kết thúc</Table.HeadCell>
-        <Table.HeadCell>Giáo viên</Table.HeadCell>
-        <Table.HeadCell>Địa điểm</Table.HeadCell>
-      </Table.Head>
-      <Table.Body>
-        {Array.isArray(registrationInfo.schedule) && registrationInfo.schedule.map((sch) => (
-          <Table.Row key={sch._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell>{sch.dayOfWeek}</Table.Cell>
-            <Table.Cell>{sch.startTime}</Table.Cell>
-            <Table.Cell>{sch.endTime}</Table.Cell>
-            <Table.Cell>{sch.teacher}</Table.Cell>
-            <Table.Cell>{sch.location}</Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
-  </div>
-)}
-
+          )}
+          <Button
+            gradientDuoTone="purpleToBlue"
+            outline
+            onClick={handleRegisterCourse}
+          >
+            Đăng ký
+          </Button>
+          {/* Display registration info after successful registration */}
+          {registrationInfo && (
+            <div className="mt-5 p-4 bg-green-100 text-green-700 rounded">
+              Đăng ký thành công! Thông tin đăng ký: 
+            </div>
+          )}
         </>
       ) : (
         <p>You have no posts yet!</p>
       )}
+       {registeredCourses.length > 0 && (
+        <div className="mt-5">
+          <h2 className="text-xl font-semibold mb-2">Danh sách môn học đã đăng ký:</h2>
+          <Table hoverable className="shadow-md">
+            <Table.Head>
+              <Table.HeadCell>Mã môn học</Table.HeadCell>
+              <Table.HeadCell>Tên môn học</Table.HeadCell>
+              <Table.HeadCell>lớp học</Table.HeadCell>
+              <Table.HeadCell>Lịch học</Table.HeadCell>
+              <Table.HeadCell>Ngày đăng ký</Table.HeadCell>
+              <Table.HeadCell>Học phí</Table.HeadCell>
+              <Table.HeadCell>Tên giảng viên</Table.HeadCell>
+              <Table.HeadCell>Trạng thái</Table.HeadCell>
+            </Table.Head>
+            {registeredCourses.map((registration) => (
+              <Table.Body className="divide-y" key={registration._id}>
+                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <Table.Cell>{registration.course.courseCode}</Table.Cell>
+                  <Table.Cell>{registration.course.courseName}</Table.Cell>
+                  <Table.Cell>{registration.schedule.class}</Table.Cell>
+                  <Table.Cell>
+                    {`${registration.schedule.dayOfWeek}`}
+                     </Table.Cell>
+                     <Table.Cell>{`${registration.schedule.startTime} - ${registration.schedule.endTime}`}</Table.Cell>
+                     <Table.Cell>{registration.tuitionFee}</Table.Cell>
+                     <Table.Cell>{registration.schedule.teacher}</Table.Cell>
+                     <Table.Cell>{registration.status}</Table.Cell>
+                   </Table.Row>
+                 </Table.Body>
+               ))}
+           </Table>
+         </div>
+       )}
     </div>
   );
 };
 
-export default DashRegiserCourse;
+export default DashRegisterCourse;

@@ -1,13 +1,14 @@
-import { Alert, Button, Select, TextInput } from "flowbite-react";
+import { Alert, Button,  TextInput } from "flowbite-react";
 import { useState } from "react";
 
 const CreateSchedule = () => {
   const [formData, setFormData] = useState({
     course: "",
-    classId: "",
+    class: "",
     dayOfWeek: "",
     startTime: "",
     endTime: "",
+    teacher:"",
     location: "",
   });
   const [publishError, setPublishError] = useState(null);
@@ -39,6 +40,7 @@ const CreateSchedule = () => {
           dayOfWeek: "",
           startTime: "",
           endTime: "",
+          teacher:"",
           location: "",
         });
       }
@@ -65,32 +67,29 @@ const CreateSchedule = () => {
           />
           <TextInput
             type="text"
-            placeholder="Mã lớp"
+            placeholder="Tên lớp"
             required
-            id="classId"
+            id="class"
             className="flex-1"
-            value={formData.classId}
+            value={formData.class}
             onChange={(e) =>
-              setFormData({ ...formData, classId: e.target.value })
+              setFormData({ ...formData, class: e.target.value })
             }
           />
-          <Select
+           <TextInput
+            type="text"
+            placeholder="Tên lớp"
+            required
+            id="dayOfWeek"
+            className="flex-1"
             value={formData.dayOfWeek}
             onChange={(e) =>
               setFormData({ ...formData, dayOfWeek: e.target.value })
             }
-          >
-            <option value="">Chọn ngày trong tuần</option>
-            <option value="Monday">Thứ Hai</option>
-            <option value="Tuesday">Thứ Ba</option>
-            <option value="Wednesday">Thứ Tư</option>
-            <option value="Thursday">Thứ Năm</option>
-            <option value="Friday">Thứ Sáu</option>
-            <option value="Saturday">Thứ Bảy</option>
-            <option value="Sunday">Chủ Nhật</option>
-          </Select>
+          />
+       
           <TextInput
-            type="time"
+            type="text"
             placeholder="Thời gian bắt đầu"
             required
             id="startTime"
@@ -101,7 +100,7 @@ const CreateSchedule = () => {
             }
           />
           <TextInput
-            type="time"
+            type="text"
             placeholder="Thời gian kết thúc"
             required
             id="endTime"
@@ -109,6 +108,17 @@ const CreateSchedule = () => {
             value={formData.endTime}
             onChange={(e) =>
               setFormData({ ...formData, endTime: e.target.value })
+            }
+          />
+           <TextInput
+            type="text"
+            placeholder="Tên giảng viên"
+            required
+            id="teacher"
+            className="flex-1"
+            value={formData.teacher}
+            onChange={(e) =>
+              setFormData({ ...formData, teacher: e.target.value })
             }
           />
           <TextInput

@@ -6,16 +6,16 @@ const { errorHandler } = require("../utils/error");
 
 const registerCourse = async (req, res, next) => {
   try {
-    const { studentId, courseId, scheduleId } = req.body;
+    const { userId, courseId, scheduleId } = req.body;
 
     // Kiểm tra tham số đầu vào
-    if (!studentId || !courseId || !scheduleId) {
+    if (!userId || !courseId || !scheduleId) {
       return next(errorHandler(400, 'Missing required fields'));
     }
 
     // Kiểm tra sự tồn tại của sinh viên
-    const student = await User.findById(studentId);
-    if (!student) {
+    const user = await User.findById(userId);
+    if (!user) {
       return next(errorHandler(404, 'Student not found'));
     }
 
@@ -33,7 +33,7 @@ const registerCourse = async (req, res, next) => {
 
     // Kiểm tra xem sinh viên đã đăng ký khóa học này chưa
     const existingRegistration = await CourseRegistration.findOne({
-      student: studentId,
+      user: userId,
       course: courseId,
       schedule: scheduleId,
     });
@@ -44,7 +44,7 @@ const registerCourse = async (req, res, next) => {
 
     // Tạo mới đăng ký khóa học
     const newRegistration = new CourseRegistration({
-      student: studentId,
+      user: userId,
       course: courseId,
       schedule: scheduleId,
       tuitionFee: parseInt(course.credits) * 900, // Tính toán học phí
@@ -58,6 +58,38 @@ const registerCourse = async (req, res, next) => {
   }
 };
 
+const getRegisterCourse = async(req,res, next) =>{
+  try {
+    const regisCourse = await CourseRegistration.find(req.query)
+  res.status(200).json(regisCourse)
+  
+  } catch (error) {
+    next(error)  
+  }
+}
+const getRegistrationsByStudent = async(req,res,next) =>{
+  const { userId } = req.params;
+  try {
+
+    // Kiểm tra sự tồn tại của sinh viên
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(errorHandler(404, 'Student not found'));
+    }
+
+    // Lấy danh sách đăng ký
+    const registrations = await CourseRegistration.find({ user: userId })
+      .populate('course')
+      .populate('schedule');
+
+    res.status(200).json({ registrations });
+  } catch (error) {
+    next(errorHandler(500, 'Server error', error.message));
+  }
+}
+
 module.exports = {
   registerCourse,
+  getRegisterCourse,
+  getRegistrationsByStudent
 };

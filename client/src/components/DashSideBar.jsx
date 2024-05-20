@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { FaFileInvoice } from "react-icons/fa6";
 import { LuUserCircle2 } from "react-icons/lu";
 import { IoLogOutOutline } from "react-icons/io5";
-import { IoMdClipboard } from "react-icons/io";
+
 import { logoutSuccess } from "../redux/user/userSlice";
 const DashSideBar = () => {
   const [tab, setTab] = useState("");
@@ -42,17 +42,7 @@ const DashSideBar = () => {
     <Sidebar className="w-full wd:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
-          {createUser && createUser.isAdmin && (
-            <Link to="/dashboard?tab=dash">
-              <Sidebar.Item
-                active={tab === "dash" || !tab}
-                icon={IoMdClipboard}
-                as="div"
-              >
-                Quản lý lớp học
-              </Sidebar.Item>
-            </Link>
-          )}
+          
 
           {createUser && createUser.isAdmin && (
             <Link to="/dashboard?tab=course">
@@ -76,17 +66,21 @@ const DashSideBar = () => {
               </Sidebar.Item>
             </Link>
           )}
-          <Link to="/dashboard?tab=regiserCourse">
-            <Sidebar.Item
-              active={tab === "regiserCourse"}
-              icon={LuUserCircle2}
-              label={createUser.isAdmin ? "Admin" : "User"}
-              labelColor="dark"
-              as="div"
-            >
-              Học phần
-            </Sidebar.Item>
-          </Link>
+         {createUser && !createUser.isAdmin && (
+           <Link to="/dashboard?tab=regiserCourse">
+           <Sidebar.Item
+             active={tab === "regiserCourse"}
+             icon={LuUserCircle2}
+             label={createUser.isAdmin ? "Admin" : "User"}
+             labelColor="dark"
+             as="div"
+           >
+             Học phần
+           </Sidebar.Item>
+         </Link>
+         )
+
+         }
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               active={tab === "profile"}

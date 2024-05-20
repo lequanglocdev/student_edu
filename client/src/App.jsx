@@ -10,9 +10,10 @@ import PrivateRoute from "./components/PrivateRoute";
 import DashBoard from "./page/DashBoard";
 import AdminPrivateRoute from "./components/AdminPrivateRoute";
 
-import UpadatePost from "./page/UpadatePost";
+import UpdateCourse from "./page/UpdateCourse";
 import CreateCourse from "./page/CreateCourse";
 import CreateSchedule from "./page/CreateSchedule";
+import About from "./page/About";
 
 function App() {
   return (
@@ -29,7 +30,8 @@ function App() {
         <Route element={<AdminPrivateRoute />}>
           <Route path='/create-course' element={<CreateCourse />} />
           <Route path='/create-schedule' element={<CreateSchedule />} />
-          <Route path='/update-post/:postId' element={<UpadatePost />} />
+          <Route path='/update-course/:courseId' element={<UpdateCourse />} />
+          <Route path='/about' element={<About />} />
         </Route>
       </Routes>
       <Footer />

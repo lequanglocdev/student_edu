@@ -75,17 +75,17 @@ const Header = () => {
         <Navbar.Link active={path === "/project"} as={"div"}>
 
            {createUser && createUser.isAdmin ? (
-              <Link to="/dashboard?tab=dash">
+              <Link to="/dashboard?tab=profile">
                 <p className="text-base">Trang quản trị</p>
               </Link>
             ) : (
-              <Link to="/dashboard?tab=dash">
+              <Link to="/dashboard?tab=regiserCourse">
                 <p className="text-base">Đăng kí môn học</p>
               </Link>
             )}
         </Navbar.Link>
         <Navbar.Link active={path === "/project"} as={"div"}>
-          <Link to="/dashboard?tab=dash">
+          <Link to="/dashboard?tab=about">
             <p className="text-base">About</p>
           </Link>
         </Navbar.Link>
