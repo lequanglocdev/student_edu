@@ -21,6 +21,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path='/about' element={<About />} />
       
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -31,7 +32,6 @@ function App() {
           <Route path='/create-course' element={<CreateCourse />} />
           <Route path='/create-schedule' element={<CreateSchedule />} />
           <Route path='/update-course/:courseId' element={<UpdateCourse />} />
-          <Route path='/about' element={<About />} />
         </Route>
       </Routes>
       <Footer />

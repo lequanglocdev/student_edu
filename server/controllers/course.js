@@ -24,23 +24,17 @@ const  getCourse = async(req,res,next) =>{
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 9;
     const sortDirection = req.query.order === 'asc' ? 1 : -1;
-    const posts = await Course.find({
+    const courses = await Course.find({
       ...(req.query.courseCode && { courseCode: req.query.courseCode }),
       ...(req.query.courseName && { courseName: req.query.courseName }),
       ...(req.query.credits && { credits: req.query.credits }),
       ...(req.query.mandatory && { _id: req.query.mandatory }),
-      ...(req.query.searchTerm && {
-        $or: [
-          { title: { $regex: req.query.searchTerm, $options: 'i' } },
-          { content: { $regex: req.query.searchTerm, $options: 'i' } },
-        ],
-      }),
     })
       .sort({ updatedAt: sortDirection })
       .skip(startIndex)
       .limit(limit);
 
-    const totalPosts = await Course.countDocuments();
+    const totalCourse = await Course.countDocuments();
 
     const now = new Date();
 
@@ -50,14 +44,14 @@ const  getCourse = async(req,res,next) =>{
       now.getDate()
     );
 
-    const lastMonthPosts = await Course.countDocuments({
+    const lastMonthCourse = await Course.countDocuments({
       createdAt: { $gte: oneMonthAgo },
     });
 
     res.status(200).json({
-      posts,
-      totalPosts,
-      lastMonthPosts,
+      courses,
+      totalCourse,
+      lastMonthCourse,
     });
   } catch (error) {
     next(error);
@@ -65,13 +59,20 @@ const  getCourse = async(req,res,next) =>{
 }
 
 const updateCourse = async (req, res, next) => {
-  if (!req.user.isAdmin) {
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
     return next(errorHandler(403, 'You are not allowed to update this course'));
   }
   try {
     const updatedCourse = await Course.findByIdAndUpdate(
       req.params.courseId,
-      req.body,
+      {
+        $set:{
+          courseCode: req.body.courseCode,
+          courseName: req.body.courseName,
+          credits: req.body.credits,
+          mandatory: req.body.mandatory
+        }
+      },
       { new: true }
     );
     res.status(200).json(updatedCourse);

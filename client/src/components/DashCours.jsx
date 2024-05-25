@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Button, Modal, Table } from "flowbite-react";
@@ -21,8 +21,9 @@ const DashPost = () => {
         );
         const data = await res.json();
         if (res.ok) {
-          setCourse(data.posts);
-          if (data.posts.length < 9) {
+          setCourse(data.courses);
+          console.log('post',data.posts)
+          if (data.courses.length < 9) {
             setShowMore(false);
           }
         }
@@ -42,8 +43,8 @@ const DashPost = () => {
       );
       const data = await res.json();
       if (res.ok) {
-        setCourse((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 9) {
+        setCourse((prev) => [...prev, ...data.courses]);
+        if (data.courses.length < 9) {
           setShowMore(false);
         }
       }
@@ -51,11 +52,11 @@ const DashPost = () => {
       console.log(error.message);
     }
   };
-  const handleDeletePost = async () => {
+  const handleDeleteCourse = async () => {
     setShowModal(false);
     try {
       const res = await fetch(
-        `/api/post/deletepost/${courseIdToDelete}/${createUser._id}`,
+        `/api/course/deletecourse/${courseIdToDelete}/${createUser._id}`,
         {
           method: 'DELETE',
         }
@@ -162,7 +163,7 @@ const DashPost = () => {
               Are you sure you want to delete your account?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeletePost}>
+              <Button color="failure" onClick={handleDeleteCourse}>
                 Yes, I am sure
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>

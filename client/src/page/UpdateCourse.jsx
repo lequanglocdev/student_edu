@@ -29,7 +29,7 @@ useEffect(() => {
       }
       if (res.ok) {
         setPublishError(null);
-        setFormData(data.posts[0]);
+        setFormData(data.courses[0]);
       }
     };
 

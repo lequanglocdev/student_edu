@@ -42,8 +42,7 @@ const DashSideBar = () => {
     <Sidebar className="w-full wd:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
-          
-
+      
           {createUser && createUser.isAdmin && (
             <Link to="/dashboard?tab=course">
               <Sidebar.Item

@@ -85,7 +85,7 @@ const Header = () => {
             )}
         </Navbar.Link>
         <Navbar.Link active={path === "/project"} as={"div"}>
-          <Link to="/dashboard?tab=about">
+          <Link to="/about">
             <p className="text-base">About</p>
           </Link>
         </Navbar.Link>
