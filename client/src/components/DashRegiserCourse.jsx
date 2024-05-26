@@ -2,7 +2,7 @@ import { Button, Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaCheck, FaTimes, FaTrash } from "react-icons/fa";
 
 const DashRegisterCourse = () => {
   const { createUser } = useSelector((state) => state.user);
@@ -10,44 +10,28 @@ const DashRegisterCourse = () => {
   const [showMore, setShowMore] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [schedule, setSchedule] = useState([]);
+  const [selectedSchedule, setSelectedSchedule] = useState(null); // New state for selected schedule
   const [registrationInfo, setRegistrationInfo] = useState(null);
   const [registeredCourses, setRegisteredCourses] = useState([]);
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const res = await fetch(`/api/course/getCourse`);
         const data = await res.json();
         if (res.ok) {
-          setCourse(data.posts);
-          if (data.posts.length < 9) {
+          setCourse(data?.courses);
+          if (data.courses?.length < 9) {
             setShowMore(false);
           }
         }
       } catch (error) {
-        console.log(error.message);
+        console.error("Error fetching courses:", error.message);
       }
     };
 
     fetchCourses();
-  }, [createUser._id]);
-
-  useEffect(() => {
-    if (createUser._id) {
-      fetchRegisteredCourses(createUser._id);
-    }
-  }, [createUser._id]);
-
-  const fetchRegisteredCourses = async (userId) => {
-    try {
-      const res = await fetch(`/api/registercourse/getRegistrationsByStudent/${userId}`);
-      const data = await res.json();
-      if (res.ok) {
-        setRegisteredCourses(data.registrations);
-      }
-    } catch (error) {
-      console.log("Error fetching registered courses:", error.message);
-    }
-  };
+  }, []);
 
   const handleShowMore = async () => {
     const startIndex = course.length;
@@ -57,13 +41,13 @@ const DashRegisterCourse = () => {
       );
       const data = await res.json();
       if (res.ok) {
-        setCourse((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 9) {
+        setCourse((prev) => [...prev, ...data.courses]);
+        if (data.courses.length < 9) {
           setShowMore(false);
         }
       }
     } catch (error) {
-      console.log(error.message);
+      console.error("Error fetching more courses:", error.message);
     }
   };
 
@@ -71,23 +55,27 @@ const DashRegisterCourse = () => {
     if (selectedCourse === courseId) {
       setSelectedCourse(null);
       setSchedule([]);
+      setSelectedSchedule(null); // Reset selected schedule
       return;
     }
     setSelectedCourse(courseId);
     try {
-      const res = await fetch(`/api/schedule/getScheduleByCourseId/${courseId}`);
+      const res = await fetch(
+        `/api/schedule/getScheduleByCourseId/${courseId}`
+      );
       const data = await res.json();
       if (res.ok) {
         setSchedule(data);
+        setSelectedSchedule(null); // Reset selected schedule
       }
     } catch (error) {
-      console.log(error.message);
+      console.error("Error fetching schedule:", error.message);
     }
   };
 
   const handleRegisterCourse = async () => {
-    if (!selectedCourse || schedule.length === 0) {
-      console.log("No course or schedule selected");
+    if (!selectedCourse || !selectedSchedule) {
+      console.error("No course or schedule selected");
       return;
     }
     try {
@@ -99,7 +87,7 @@ const DashRegisterCourse = () => {
         body: JSON.stringify({
           userId: createUser._id,
           courseId: selectedCourse,
-          scheduleId: schedule[0]._id, // Assuming you register for the first schedule, adjust if necessary
+          scheduleId: selectedSchedule, // Use the selected schedule
         }),
       });
       const data = await res.json();
@@ -107,17 +95,62 @@ const DashRegisterCourse = () => {
         setRegistrationInfo(data.registration);
         console.log("Course registered successfully");
         fetchRegisteredCourses(createUser._id); // Fetch updated registered courses
+        setTimeout(() => {
+          setRegistrationInfo(null);
+        }, 2000);
       } else {
-        console.log("Registration failed:", data.message);
+        console.error("Registration failed:", data.message);
       }
     } catch (error) {
-      console.log("Error during course registration:", error.message);
+      console.error("Error during course registration:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (createUser._id) {
+      fetchRegisteredCourses(createUser._id);
+    }
+  }, [createUser._id]);
+
+  const fetchRegisteredCourses = async (userId) => {
+    try {
+      const res = await fetch(
+        `/api/registercourse/getRegistrationsByStudent/${userId}`
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setRegisteredCourses(data.registrations);
+      }
+    } catch (error) {
+      console.error("Error fetching registered courses:", error.message);
+    }
+  };
+
+  const handleDeleteRegistration = async (registrationId) => {
+    try {
+      const res = await fetch(
+        `/api/registercourse/deleteRegistration/${registrationId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.ok) {
+        console.log("Registration deleted successfully");
+        fetchRegisteredCourses(createUser._id);
+      } else {
+        console.error("Deletion failed");
+      }
+    } catch (error) {
+      console.error("Error during registration deletion:", error.message);
     }
   };
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
-      {course.length > 0 ? (
+      {!createUser.isAdmin && course?.length > 0 ? (
         <>
           <h2 className="text-xl font-semibold mb-2">Môn học:</h2>
           <Table hoverable className="shadow-md">
@@ -175,11 +208,15 @@ const DashRegisterCourse = () => {
               Show more
             </button>
           )}
-          {selectedCourse && schedule.length > 0 && (
+
+          {/* Lịch học */}
+
+          {selectedCourse && schedule?.length > 0 && (
             <div className="mt-5">
               <h2 className="text-xl font-semibold mb-2">Lịch học:</h2>
               <Table>
                 <Table.Head>
+                  <Table.HeadCell>Chọn</Table.HeadCell>
                   <Table.HeadCell>Ngày</Table.HeadCell>
                   <Table.HeadCell>Thời gian bắt đầu</Table.HeadCell>
                   <Table.HeadCell>Thời gian kết thúc</Table.HeadCell>
@@ -189,6 +226,16 @@ const DashRegisterCourse = () => {
                 {schedule.map((sch) => (
                   <Table.Body key={sch._id}>
                     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                      <Table.Cell>
+                        <input
+                          type="radio"
+                          checked={selectedSchedule === sch._id}
+                          onChange={() => setSelectedSchedule(sch._id)}
+                          className={`form-radio ${
+                            selectedSchedule === sch._id ? "text-green-500" : ""
+                          }`}
+                        />
+                      </Table.Cell>
                       <Table.Cell>{sch.dayOfWeek}</Table.Cell>
                       <Table.Cell>{sch.startTime}</Table.Cell>
                       <Table.Cell>{sch.endTime}</Table.Cell>
@@ -207,29 +254,31 @@ const DashRegisterCourse = () => {
           >
             Đăng ký
           </Button>
-          {/* Display registration info after successful registration */}
           {registrationInfo && (
             <div className="mt-5 p-4 bg-green-100 text-green-700 rounded">
-              Đăng ký thành công! Thông tin đăng ký: 
+              Đăng ký thành công! Thông tin đăng ký:
             </div>
           )}
         </>
       ) : (
-        <p>You have no posts yet!</p>
+        <p>Bạn chưa có môn học nào!</p>
       )}
-       {registeredCourses.length > 0 && (
+      {registeredCourses.length > 0 && (
         <div className="mt-5">
-          <h2 className="text-xl font-semibold mb-2">Danh sách môn học đã đăng ký:</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            Danh sách môn học đã đăng ký:
+          </h2>
           <Table hoverable className="shadow-md">
             <Table.Head>
               <Table.HeadCell>Mã môn học</Table.HeadCell>
               <Table.HeadCell>Tên môn học</Table.HeadCell>
-              <Table.HeadCell>lớp học</Table.HeadCell>
+              <Table.HeadCell>Lớp học</Table.HeadCell>
               <Table.HeadCell>Lịch học</Table.HeadCell>
               <Table.HeadCell>Ngày đăng ký</Table.HeadCell>
               <Table.HeadCell>Học phí</Table.HeadCell>
               <Table.HeadCell>Tên giảng viên</Table.HeadCell>
               <Table.HeadCell>Trạng thái</Table.HeadCell>
+              <Table.HeadCell>Hủy môn học</Table.HeadCell>
             </Table.Head>
             {registeredCourses.map((registration) => (
               <Table.Body className="divide-y" key={registration._id}>
@@ -237,19 +286,25 @@ const DashRegisterCourse = () => {
                   <Table.Cell>{registration.course.courseCode}</Table.Cell>
                   <Table.Cell>{registration.course.courseName}</Table.Cell>
                   <Table.Cell>{registration.schedule.class}</Table.Cell>
+                  <Table.Cell>{registration.schedule.dayOfWeek}</Table.Cell>
+                  <Table.Cell>{`${registration.schedule.startTime} - ${registration.schedule.endTime}`}</Table.Cell>
+                  <Table.Cell>{registration.tuitionFee}</Table.Cell>
+                  <Table.Cell>{registration.schedule.teacher}</Table.Cell>
+                  <Table.Cell>{registration.status}</Table.Cell>
                   <Table.Cell>
-                    {`${registration.schedule.dayOfWeek}`}
-                     </Table.Cell>
-                     <Table.Cell>{`${registration.schedule.startTime} - ${registration.schedule.endTime}`}</Table.Cell>
-                     <Table.Cell>{registration.tuitionFee}</Table.Cell>
-                     <Table.Cell>{registration.schedule.teacher}</Table.Cell>
-                     <Table.Cell>{registration.status}</Table.Cell>
-                   </Table.Row>
-                 </Table.Body>
-               ))}
-           </Table>
-         </div>
-       )}
+                    <button
+                      onClick={() => handleDeleteRegistration(registration._id)}
+                    >
+                      <FaTrash className="text-red-500 ml-6 s text-xl" />
+                    </button>
+                  </Table.Cell>
+                </Table.Row>
+              </Table.Body>
+            ))}
+          </Table>
+        </div>
+      )}
+     
     </div>
   );
 };

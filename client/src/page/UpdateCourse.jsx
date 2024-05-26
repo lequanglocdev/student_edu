@@ -29,7 +29,14 @@ useEffect(() => {
       }
       if (res.ok) {
         setPublishError(null);
-        setFormData(data.courses[0]);
+        const editedCourse = data.courses.find(
+          (course) => course._id === courseId
+        );
+
+        if (editedCourse) {
+          setFormData(editedCourse);
+        }
+        console.log("course", editedCourse);
       }
     };
 
