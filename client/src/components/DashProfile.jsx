@@ -1,5 +1,5 @@
 // import React from 'react'
-import { Alert, Button, Modal, Select, TextInput } from "flowbite-react";
+import { Alert, Button, Select, TextInput } from "flowbite-react";
 import { useRef, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -17,12 +17,8 @@ import {
   updateStart,
   updateSuccess,
   updateFail,
-  deleteUserStart,
-  deleteUserSuccess,
-  deleteUserFail,
-  logoutSuccess,
 } from "../redux/user/userSlice";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+
 const DashProfile = () => {
   // eslint-disable-next-line no-unused-vars
   const { createUser, error, loading } = useSelector((state) => state.user);
@@ -36,7 +32,7 @@ const DashProfile = () => {
   const [formData, setFormData] = useState({});
   const [updateUserError, setUpdateUserError] = useState(null);
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+
   const dispatch = useDispatch();
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -128,38 +124,7 @@ const DashProfile = () => {
       setUpdateUserError(error.message);
     }
   };
-  const handleDeleteUser = async () => {
-    setShowModal(false);
-    try {
-      dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${createUser._id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        dispatch(deleteUserFail(data.message));
-      } else {
-        dispatch(deleteUserSuccess(data));
-      }
-    } catch (error) {
-      dispatch(deleteUserFail(error.message));
-    }
-  };
-  const handleLognout = async () => {
-    try {
-      const res = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        dispatch(logoutSuccess());
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+ 
   return (
     <div className="max-w-3xl mx-auto p-3 w-full">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 my-7">
@@ -298,14 +263,7 @@ const DashProfile = () => {
           </Link>
         )}
       </form>
-      <div className="text-red-500 flex justify-between mt-5">
-        <span onClick={() => setShowModal(true)} className="cursor-pointer">
-          Xóa tài khoản
-        </span>
-        <span onClick={handleLognout} className="cursor-pointer">
-          Đăng xuất
-        </span>
-      </div>
+     
       {updateUserSuccess && (
         <Alert color="success" className="mt-5">
           {updateUserSuccess}
@@ -317,30 +275,7 @@ const DashProfile = () => {
         </Alert>
       )}
 
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        popup
-        size="md"
-      >
-        <Modal.Header />
-        <Modal.Body>
-          <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-              Bạn có chắc rằng bạn muốn xóa tài khoản ?
-            </h3>
-            <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeleteUser}>
-                Xóa
-              </Button>
-              <Button color="gray" onClick={() => setShowModal(false)}>
-                Không
-              </Button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+    
     </div>
   );
 };

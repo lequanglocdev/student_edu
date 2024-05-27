@@ -4,7 +4,7 @@ import { useState } from "react";
 const CreateSchedule = () => {
   const [formData, setFormData] = useState({
     course: "",
-    class: "",
+    classId: "",
     dayOfWeek: "",
     startTime: "",
     endTime: "",
@@ -69,16 +69,16 @@ const CreateSchedule = () => {
             type="text"
             placeholder="Tên lớp"
             required
-            id="class"
+            id="classId"
             className="flex-1"
-            value={formData.class}
+            value={formData.classId}
             onChange={(e) =>
-              setFormData({ ...formData, class: e.target.value })
+              setFormData({ ...formData, classId: e.target.value })
             }
           />
            <TextInput
             type="text"
-            placeholder="Tên lớp"
+            placeholder="Ngày học"
             required
             id="dayOfWeek"
             className="flex-1"
